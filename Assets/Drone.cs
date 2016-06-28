@@ -23,6 +23,10 @@ public class Drone : MonoBehaviour
     private const float RotationSpeed = 1.0f;
     private const float MaxBackForwardSpeed = 3f;
     private const float BackForwardSpeedStep = 0.1f;
+    private const float TiltSpeed = 0.2f;
+    private const float MaxTilt = 14.2f;
+
+    private bool _dKeyPressed, _aKeyPressed;
 
     private Rigidbody _rigidbody;
 
@@ -33,9 +37,11 @@ public class Drone : MonoBehaviour
 
     private float _backForwardSpeed;
 
+    private float _eulerZ;
+
     private static int GetGravityEquivalentRpm()
     {
-        return (int)Math.Floor((GravityForce/4 * PropellerMaxRpm) / PropellerMaxForce);
+        return (int)Math.Floor((GravityForce / 4 * PropellerMaxRpm) / PropellerMaxForce);
     }
 
     private static float CalculateActualForce(float rpm)
@@ -52,11 +58,14 @@ public class Drone : MonoBehaviour
     void Start()
     {
         _rigidbody = GetComponent<Rigidbody>();
+        _eulerZ = 0;
     }
 
     // Update is called once per frame
     void Update()
     {
+        _aKeyPressed = _dKeyPressed = false;
+
         var actualFrontLeftPropellerForce = CalculateActualForce(_frontLeftPropellerActualRpm);
         var actualFrontRightPropellerForce = CalculateActualForce(_frontRightPropellerActualRpm);
         var actualBackLeftPropellerForce = CalculateActualForce(_backLeftPropellerActualRpm);
@@ -232,12 +241,29 @@ public class Drone : MonoBehaviour
 
         if (Input.GetKey(KeyCode.A))
         {
+            _aKeyPressed = true;
+
             transform.RotateAround(DroneCenter.transform.position, Vector3.up, -RotationSpeed);
+
+            if (_eulerZ < MaxTilt)
+            {
+                _eulerZ += TiltSpeed;
+            }
+
+            UpdateEulerAngle();
         }
 
         if (Input.GetKey(KeyCode.D))
         {
+            _dKeyPressed = true;
             transform.RotateAround(DroneCenter.transform.position, Vector3.up, RotationSpeed);
+
+            if (_eulerZ > -MaxTilt)
+            {
+                _eulerZ -= TiltSpeed;
+            }
+
+            UpdateEulerAngle();
         }
 
         if (Input.GetKey(KeyCode.W))
@@ -258,5 +284,31 @@ public class Drone : MonoBehaviour
             transform.up, CalculateRotationAngle(_backLeftPropellerActualRpm));
         BackRightPropeller.transform.RotateAround(BackRightPropellerCenter.transform.position,
             transform.up, CalculateRotationAngle(_backRightPropellerActualRpm));
+
+        StraigtenShipUp();
+    }
+
+    private void UpdateEulerAngle()
+    {
+        Vector3 euler = transform.localEulerAngles;
+        euler.z = _eulerZ;
+        transform.localEulerAngles = euler;
+    }
+
+    private void StraigtenShipUp()
+    {
+        if (!_aKeyPressed && !_dKeyPressed)
+        {
+            if (_eulerZ < 0)
+            {
+                _eulerZ += TiltSpeed;
+            }
+            else
+            {
+                _eulerZ -= TiltSpeed;
+            }
+
+            UpdateEulerAngle();
+        }
     }
 }
