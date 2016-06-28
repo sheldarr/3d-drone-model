@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEditor;
 using UnityEngine;
 
 public class Drone : MonoBehaviour
@@ -20,7 +21,8 @@ public class Drone : MonoBehaviour
     private const int PropellerRpmStep = 100;
     private const float GravityForce = 9.8f;
     private const float RotationSpeed = 1.0f;
-    private const float MaxBackForwardSpeed = 5.0f;
+    private const float MaxBackForwardSpeed = 3f;
+    private const float BackForwardSpeedStep = 0.1f;
 
     private Rigidbody _rigidbody;
 
@@ -80,6 +82,21 @@ public class Drone : MonoBehaviour
             + actualBackLeftPropellerForce + actualBackRightPropellerForce;
 
         _rigidbody.AddForce(Vector3.up * (summaryForce - GravityForce));
+
+        _rigidbody.AddForce(transform.forward * _backForwardSpeed);
+        //transform.Translate(transform.forward * _backForwardSpeed);
+
+        Debug.Log(transform.forward);
+
+        if (_backForwardSpeed > MaxBackForwardSpeed)
+        {
+            _backForwardSpeed = MaxBackForwardSpeed;
+        }
+
+        if (_backForwardSpeed < -MaxBackForwardSpeed)
+        {
+            _backForwardSpeed = -MaxBackForwardSpeed;
+        }
 
         if (_frontLeftPropellerActualRpm > PropellerMaxRpm)
         {
@@ -149,7 +166,7 @@ public class Drone : MonoBehaviour
             }
         }
 
-        if (Input.GetKey(KeyCode.I))
+        if (Input.GetKey(KeyCode.F))
         {
             if (_frontLeftPropellerActualRpm > PropellerMinRpm)
             {
@@ -181,21 +198,21 @@ public class Drone : MonoBehaviour
 
         if (Input.GetKey(KeyCode.W))
         {
-            transform.RotateAround(DroneCenter.transform.position, Vector3.up, RotationSpeed);
+            _backForwardSpeed += BackForwardSpeedStep;
         }
 
         if (Input.GetKey(KeyCode.S))
         {
-            transform.RotateAround(DroneCenter.transform.position, Vector3.up, RotationSpeed);
+            _backForwardSpeed -= BackForwardSpeedStep;
         }
 
         FrontLeftPropeller.transform.RotateAround(FrontLeftPropellerCenter.transform.position,
-            Vector3.up, CalculateRotationAngle(_frontLeftPropellerActualRpm));
+            transform.up, CalculateRotationAngle(_frontLeftPropellerActualRpm));
         FrontRightPropeller.transform.RotateAround(FrontRightPropellerCenter.transform.position,
-            Vector3.up, CalculateRotationAngle(_frontRightPropellerActualRpm));
+            transform.up, CalculateRotationAngle(_frontRightPropellerActualRpm));
         BackLeftPropeller.transform.RotateAround(BackLeftPropellerCenter.transform.position,
-            Vector3.up, CalculateRotationAngle(_backLeftPropellerActualRpm));
+            transform.up, CalculateRotationAngle(_backLeftPropellerActualRpm));
         BackRightPropeller.transform.RotateAround(BackRightPropellerCenter.transform.position,
-            Vector3.up, CalculateRotationAngle(_backRightPropellerActualRpm));
+            transform.up, CalculateRotationAngle(_backRightPropellerActualRpm));
     }
 }
