@@ -8,27 +8,32 @@ public class Drone : MonoBehaviour
     public GameObject BackLeftPropeller;
     public GameObject BackRightPropeller;
 
+    public GameObject DroneCenter;
     public GameObject FrontLeftPropellerCenter;
     public GameObject FrontRightPropellerCenter;
     public GameObject BackLeftPropellerCenter;
     public GameObject BackRightPropellerCenter;
 
-    private const float PropellerMaxForce = 64;
+    private const float PropellerMaxForce = 4.4f;
     private const int PropellerMaxRpm = 28000;
     private const int PropellerMinRpm = 0;
     private const int PropellerRpmStep = 100;
     private const float GravityForce = 9.8f;
+    private const float RotationSpeed = 1.0f;
+    private const float MaxBackForwardSpeed = 5.0f;
 
     private Rigidbody _rigidbody;
 
     private int _frontLeftPropellerActualRpm = GetGravityEquivalentRpm();
-    private int _frontRightPropellerActualRpm = 100;
-    private int _backLeftPropellerActualRpm = 1;
-    private int _backRightPropellerActualRpm = 400;
+    private int _frontRightPropellerActualRpm = GetGravityEquivalentRpm();
+    private int _backLeftPropellerActualRpm = GetGravityEquivalentRpm();
+    private int _backRightPropellerActualRpm = GetGravityEquivalentRpm();
+
+    private float _backForwardSpeed = 0f;
 
     private static int GetGravityEquivalentRpm()
     {
-        return (int)Math.Floor((GravityForce * PropellerMaxRpm) / PropellerMaxForce);
+        return (int)Math.Floor((GravityForce/4 * PropellerMaxRpm) / PropellerMaxForce);
     }
 
     private static float CalculateActualForce(float rpm)
@@ -41,6 +46,18 @@ public class Drone : MonoBehaviour
         return rpm * 60 * Time.deltaTime;
     }
 
+    public void ApplyForceFromPropeller(float rpm, Vector3 propellerPosition)
+    {
+        var actualFrontLeftPropellerForce = CalculateActualForce(_frontLeftPropellerActualRpm);
+        var actualFrontRightPropellerForce = CalculateActualForce(_frontRightPropellerActualRpm);
+        var actualBackLeftPropellerForce = CalculateActualForce(_backLeftPropellerActualRpm);
+        var actualBackRightPropellerForce= CalculateActualForce(_backRightPropellerActualRpm);
+
+        Debug.Log(string.Format("Power: FL{0}% FR{1}% BL{2}% BR{3}%", actualFrontLeftPropellerForce/ PropellerMaxForce * 100,
+            actualFrontRightPropellerForce / PropellerMaxForce * 100, actualBackLeftPropellerForce / PropellerMaxForce * 100,
+            actualBackRightPropellerForce / PropellerMaxForce * 100));
+    }
+
     // Use this for initialization
     void Start()
     {
@@ -50,10 +67,19 @@ public class Drone : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        var actualPropellerForce = CalculateActualForce(_frontLeftPropellerActualRpm);
-        var currentForce = transform.up*(actualPropellerForce - GravityForce);
-        Debug.Log(string.Format("Power: {0}%", actualPropellerForce/PropellerMaxForce*100));
-        _rigidbody.AddForce(currentForce, ForceMode.Force);
+        var actualFrontLeftPropellerForce = CalculateActualForce(_frontLeftPropellerActualRpm);
+        var actualFrontRightPropellerForce = CalculateActualForce(_frontRightPropellerActualRpm);
+        var actualBackLeftPropellerForce = CalculateActualForce(_backLeftPropellerActualRpm);
+        var actualBackRightPropellerForce = CalculateActualForce(_backRightPropellerActualRpm);
+
+        Debug.Log(string.Format("Power: FL{0}% FR{1}% BL{2}% BR{3}%", actualFrontLeftPropellerForce / PropellerMaxForce * 100,
+            actualFrontRightPropellerForce / PropellerMaxForce * 100, actualBackLeftPropellerForce / PropellerMaxForce * 100,
+            actualBackRightPropellerForce / PropellerMaxForce * 100));
+
+        var summaryForce = actualFrontLeftPropellerForce + actualFrontRightPropellerForce
+            + actualBackLeftPropellerForce + actualBackRightPropellerForce;
+
+        _rigidbody.AddForce(Vector3.up * (summaryForce - GravityForce));
 
         if (_frontLeftPropellerActualRpm > PropellerMaxRpm)
         {
@@ -97,37 +123,26 @@ public class Drone : MonoBehaviour
 
         if (Input.GetKey(KeyCode.S))
         {
-            var gravityEquivalentRpm = GetGravityEquivalentRpm();
-
-            _frontLeftPropellerActualRpm = gravityEquivalentRpm;
-            _frontRightPropellerActualRpm = gravityEquivalentRpm;
-            _backLeftPropellerActualRpm = gravityEquivalentRpm;
-            _backRightPropellerActualRpm = gravityEquivalentRpm;
+            _frontLeftPropellerActualRpm = GetGravityEquivalentRpm();
+            _frontRightPropellerActualRpm = GetGravityEquivalentRpm();
+            _backLeftPropellerActualRpm = GetGravityEquivalentRpm();
+            _backRightPropellerActualRpm = GetGravityEquivalentRpm();
         }
 
-        if (Input.GetKey(KeyCode.T))
+        if (Input.GetKey(KeyCode.R))
         {
             if (_frontLeftPropellerActualRpm < PropellerMaxRpm)
             {
                 _frontLeftPropellerActualRpm += PropellerRpmStep;
             }
-        }
-        if (Input.GetKey(KeyCode.Y))
-        {
             if (_frontRightPropellerActualRpm < PropellerMaxRpm)
             {
                 _frontRightPropellerActualRpm += PropellerRpmStep;
             }
-        }
-        if (Input.GetKey(KeyCode.G))
-        {
             if (_backLeftPropellerActualRpm < PropellerMaxRpm)
             {
                 _backLeftPropellerActualRpm += PropellerRpmStep;
             }
-        }
-        if (Input.GetKey(KeyCode.H))
-        {
             if (_backRightPropellerActualRpm < PropellerMaxRpm)
             {
                 _backRightPropellerActualRpm += PropellerRpmStep;
@@ -140,27 +155,38 @@ public class Drone : MonoBehaviour
             {
                 _frontLeftPropellerActualRpm -= PropellerRpmStep;
             }
-        }
-        if (Input.GetKey(KeyCode.O))
-        {
             if (_frontRightPropellerActualRpm > PropellerMinRpm)
             {
                 _frontRightPropellerActualRpm -= PropellerRpmStep;
             }
-        }
-        if (Input.GetKey(KeyCode.K))
-        {
             if (_backLeftPropellerActualRpm > PropellerMinRpm)
             {
                 _backLeftPropellerActualRpm -= PropellerRpmStep;
             }
-        }
-        if (Input.GetKey(KeyCode.L))
-        {
             if (_backRightPropellerActualRpm > PropellerMinRpm)
             {
                 _backRightPropellerActualRpm -= PropellerRpmStep;
             }
+        }
+
+        if (Input.GetKey(KeyCode.A))
+        {
+            transform.RotateAround(DroneCenter.transform.position, Vector3.up, -RotationSpeed);
+        }
+
+        if (Input.GetKey(KeyCode.D))
+        {
+            transform.RotateAround(DroneCenter.transform.position, Vector3.up, RotationSpeed);
+        }
+
+        if (Input.GetKey(KeyCode.W))
+        {
+            transform.RotateAround(DroneCenter.transform.position, Vector3.up, RotationSpeed);
+        }
+
+        if (Input.GetKey(KeyCode.S))
+        {
+            transform.RotateAround(DroneCenter.transform.position, Vector3.up, RotationSpeed);
         }
 
         FrontLeftPropeller.transform.RotateAround(FrontLeftPropellerCenter.transform.position,
