@@ -31,7 +31,7 @@ public class Drone : MonoBehaviour
     private int _backLeftPropellerActualRpm = GetGravityEquivalentRpm();
     private int _backRightPropellerActualRpm = GetGravityEquivalentRpm();
 
-    private float _backForwardSpeed = 0f;
+    private float _backForwardSpeed;
 
     private static int GetGravityEquivalentRpm()
     {
@@ -81,10 +81,10 @@ public class Drone : MonoBehaviour
         var summaryForce = actualFrontLeftPropellerForce + actualFrontRightPropellerForce
             + actualBackLeftPropellerForce + actualBackRightPropellerForce;
 
-        _rigidbody.AddForce(Vector3.up * (summaryForce - GravityForce));
+        var velocity = transform.forward * _backForwardSpeed;
+        velocity.y = summaryForce - GravityForce;
 
-        _rigidbody.AddForce(transform.forward * _backForwardSpeed);
-        //transform.Translate(transform.forward * _backForwardSpeed);
+        _rigidbody.velocity = velocity;
 
         Debug.Log(transform.forward);
 
