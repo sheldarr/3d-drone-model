@@ -48,18 +48,6 @@ public class Drone : MonoBehaviour
         return rpm * 60 * Time.deltaTime;
     }
 
-    public void ApplyForceFromPropeller(float rpm, Vector3 propellerPosition)
-    {
-        var actualFrontLeftPropellerForce = CalculateActualForce(_frontLeftPropellerActualRpm);
-        var actualFrontRightPropellerForce = CalculateActualForce(_frontRightPropellerActualRpm);
-        var actualBackLeftPropellerForce = CalculateActualForce(_backLeftPropellerActualRpm);
-        var actualBackRightPropellerForce= CalculateActualForce(_backRightPropellerActualRpm);
-
-        Debug.Log(string.Format("Power: FL{0}% FR{1}% BL{2}% BR{3}%", actualFrontLeftPropellerForce/ PropellerMaxForce * 100,
-            actualFrontRightPropellerForce / PropellerMaxForce * 100, actualBackLeftPropellerForce / PropellerMaxForce * 100,
-            actualBackRightPropellerForce / PropellerMaxForce * 100));
-    }
-
     // Use this for initialization
     void Start()
     {
@@ -85,8 +73,6 @@ public class Drone : MonoBehaviour
         velocity.y = summaryForce - GravityForce;
 
         _rigidbody.velocity = velocity;
-
-        Debug.Log(transform.forward);
 
         if (_backForwardSpeed > MaxBackForwardSpeed)
         {
