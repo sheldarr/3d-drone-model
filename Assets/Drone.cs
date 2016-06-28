@@ -7,7 +7,7 @@ public class Drone : MonoBehaviour
     private const int PropellerMaxRpm = 28000;
     private const int PropellerMinRpm = 0;
     private const int PropellerRpmStep = 50;
-    private const float GravityForce = 20f;
+    private const float GravityForce = 5;
 
     private Rigidbody _rigidbody;
 
@@ -35,8 +35,7 @@ public class Drone : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        _rigidbody.AddForce(transform.up * 98.0f, ForceMode.Force);
-        //_rigidbody.AddForce(transform.up * CalculateActualForce(_frontLeftPropellerActualRpm), ForceMode.Force);
+        _rigidbody.AddForce(transform.up * CalculateActualForce(_frontLeftPropellerActualRpm), ForceMode.Force);
 
         if (Input.GetKey(KeyCode.S))
         {
