@@ -3,6 +3,16 @@ using UnityEngine;
 
 public class Drone : MonoBehaviour
 {
+    public GameObject Wing1;
+    public GameObject Wing2;
+    public GameObject Wing3;
+    public GameObject Wing4;
+
+    public GameObject Wing1Center;
+    public GameObject Wing2Center;
+    public GameObject Wing3Center;
+    public GameObject Wing4Center;
+
     private const float PropellerMaxForce = 64;
     private const int PropellerMaxRpm = 28000;
     private const int PropellerMinRpm = 0;
@@ -21,9 +31,14 @@ public class Drone : MonoBehaviour
         return (int)Math.Floor((GravityForce * PropellerMaxRpm) / PropellerMaxForce);
     }
 
-    private float CalculateActualForce(float rpm)
+    private static float CalculateActualForce(float rpm)
     {
         return rpm / PropellerMaxRpm * PropellerMaxForce;
+    }
+
+    private static float CalculateRotationAngle(float rpm)
+    {
+        return rpm * 60 * Time.deltaTime;
     }
 
     // Use this for initialization
