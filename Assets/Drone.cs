@@ -3,15 +3,15 @@ using UnityEngine;
 
 public class Drone : MonoBehaviour
 {
-    public GameObject Wing1;
-    public GameObject Wing2;
-    public GameObject Wing3;
-    public GameObject Wing4;
+    public GameObject FrontLeftPropeller;
+    public GameObject FrontRightPropeller;
+    public GameObject BackLeftPropeller;
+    public GameObject BackRightPropeller;
 
-    public GameObject Wing1Center;
-    public GameObject Wing2Center;
-    public GameObject Wing3Center;
-    public GameObject Wing4Center;
+    public GameObject FrontLeftPropellerCenter;
+    public GameObject FrontRightPropellerCenter;
+    public GameObject BackLeftPropellerCenter;
+    public GameObject BackRightPropellerCenter;
 
     private const float PropellerMaxForce = 64;
     private const int PropellerMaxRpm = 28000;
