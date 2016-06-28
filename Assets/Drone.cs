@@ -186,6 +186,64 @@ public class Drone : MonoBehaviour
             }
         }
 
+        if (Input.GetKey(KeyCode.U))
+        {
+            if (_frontLeftPropellerActualRpm < PropellerMaxRpm)
+            {
+                _frontLeftPropellerActualRpm += PropellerRpmStep;
+            }
+        }
+        if (Input.GetKey(KeyCode.I))
+        {
+            if (_frontRightPropellerActualRpm < PropellerMaxRpm)
+            {
+                _frontRightPropellerActualRpm += PropellerRpmStep;
+            }
+        }
+        if (Input.GetKey(KeyCode.J))
+        {
+            if (_backLeftPropellerActualRpm < PropellerMaxRpm)
+            {
+                _backLeftPropellerActualRpm += PropellerRpmStep;
+            }
+        }
+        if (Input.GetKey(KeyCode.K))
+        {
+            if (_backRightPropellerActualRpm < PropellerMaxRpm)
+            {
+                _backRightPropellerActualRpm += PropellerRpmStep;
+            }
+        }
+
+        if (Input.GetKey(KeyCode.O))
+        {
+            if (_frontLeftPropellerActualRpm > PropellerMinRpm)
+            {
+                _frontLeftPropellerActualRpm -= PropellerRpmStep;
+            }
+        }
+        if (Input.GetKey(KeyCode.P))
+        {
+            if (_frontRightPropellerActualRpm > PropellerMinRpm)
+            {
+                _frontRightPropellerActualRpm -= PropellerRpmStep;
+            }
+        }
+        if (Input.GetKey(KeyCode.L))
+        {
+            if (_backLeftPropellerActualRpm > PropellerMinRpm)
+            {
+                _backLeftPropellerActualRpm -= PropellerRpmStep;
+            }
+        }
+        if (Input.GetKey(KeyCode.Semicolon))
+        {
+            if (_backRightPropellerActualRpm > PropellerMinRpm)
+            {
+                _backRightPropellerActualRpm -= PropellerRpmStep;
+            }
+        }
+
         if (Input.GetKey(KeyCode.A))
         {
             transform.RotateAround(DroneCenter.transform.position, Vector3.up, -RotationSpeed);
