@@ -138,7 +138,7 @@ public class Drone : MonoBehaviour
             _backRightPropellerActualRpm = 0;
         }
 
-        if (Input.GetKey(KeyCode.S))
+        if (Input.GetKey(KeyCode.Q))
         {
             _frontLeftPropellerActualRpm = GetGravityEquivalentRpm();
             _frontRightPropellerActualRpm = GetGravityEquivalentRpm();
