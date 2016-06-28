@@ -22,9 +22,9 @@ public class Drone : MonoBehaviour
     private Rigidbody _rigidbody;
 
     private int _frontLeftPropellerActualRpm = GetGravityEquivalentRpm();
-    private int _frontRightPropellerActualRpm = GetGravityEquivalentRpm();
-    private int _backLeftPropellerActualRpm = GetGravityEquivalentRpm();
-    private int _backRightPropellerActualRpm = GetGravityEquivalentRpm();
+    private int _frontRightPropellerActualRpm = 100;
+    private int _backLeftPropellerActualRpm = 1;
+    private int _backRightPropellerActualRpm = 400;
 
     private static int GetGravityEquivalentRpm()
     {
@@ -162,5 +162,14 @@ public class Drone : MonoBehaviour
                 _backRightPropellerActualRpm -= PropellerRpmStep;
             }
         }
+
+        FrontLeftPropeller.transform.RotateAround(FrontLeftPropellerCenter.transform.position,
+            Vector3.up, CalculateRotationAngle(_frontLeftPropellerActualRpm));
+        FrontRightPropeller.transform.RotateAround(FrontRightPropellerCenter.transform.position,
+            Vector3.up, CalculateRotationAngle(_frontRightPropellerActualRpm));
+        BackLeftPropeller.transform.RotateAround(BackLeftPropellerCenter.transform.position,
+            Vector3.up, CalculateRotationAngle(_backLeftPropellerActualRpm));
+        BackRightPropeller.transform.RotateAround(BackRightPropellerCenter.transform.position,
+            Vector3.up, CalculateRotationAngle(_backRightPropellerActualRpm));
     }
 }
