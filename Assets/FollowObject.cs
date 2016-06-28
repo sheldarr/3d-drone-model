@@ -6,7 +6,6 @@ public class FollowObject : MonoBehaviour
 
     public GameObject ObjectToFollow;
 
-    // Use this for initialization
     void Start()
     {
         _offset = transform.position - ObjectToFollow.transform.position;
@@ -15,6 +14,5 @@ public class FollowObject : MonoBehaviour
     void Update()
     {
         transform.position = ObjectToFollow.transform.position + _offset;
-        Debug.Log(transform.position);
     }
 }

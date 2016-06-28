@@ -3,18 +3,18 @@ using UnityEngine;
 
 public class Drone : MonoBehaviour
 {
-    private const float PropellerMaxForce = 12.8f;
+    private const float PropellerMaxForce = 64;
     private const int PropellerMaxRpm = 28000;
     private const int PropellerMinRpm = 0;
-    private const int PropellerRpmStep = 50;
-    private const float GravityForce = 5;
+    private const int PropellerRpmStep = 100;
+    private const float GravityForce = 9.8f;
 
     private Rigidbody _rigidbody;
 
     private int _frontLeftPropellerActualRpm = GetGravityEquivalentRpm();
     private int _frontRightPropellerActualRpm = GetGravityEquivalentRpm();
     private int _backLeftPropellerActualRpm = GetGravityEquivalentRpm();
-    private int _backRightFrontPropellerActualRpm = GetGravityEquivalentRpm();
+    private int _backRightPropellerActualRpm = GetGravityEquivalentRpm();
 
     private static int GetGravityEquivalentRpm()
     {
@@ -35,7 +35,50 @@ public class Drone : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        _rigidbody.AddForce(transform.up * CalculateActualForce(_frontLeftPropellerActualRpm), ForceMode.Force);
+        var actualPropellerForce = CalculateActualForce(_frontLeftPropellerActualRpm);
+        var currentForce = transform.up*(actualPropellerForce - GravityForce);
+        Debug.Log(string.Format("Power: {0}%", actualPropellerForce/PropellerMaxForce*100));
+        _rigidbody.AddForce(currentForce, ForceMode.Force);
+
+        if (_frontLeftPropellerActualRpm > PropellerMaxRpm)
+        {
+            _frontLeftPropellerActualRpm = PropellerMaxRpm;
+        }
+
+        if (_frontRightPropellerActualRpm > PropellerMaxRpm)
+        {
+            _frontRightPropellerActualRpm = PropellerMaxRpm;
+        }
+
+        if (_backLeftPropellerActualRpm > PropellerMaxRpm)
+        {
+            _backLeftPropellerActualRpm = PropellerMaxRpm;
+        }
+
+        if (_backRightPropellerActualRpm > PropellerMaxRpm)
+        {
+            _backRightPropellerActualRpm = PropellerMaxRpm;
+        }
+
+        if (_frontLeftPropellerActualRpm < 0)
+        {
+            _frontLeftPropellerActualRpm = 0;
+        }
+
+        if (_frontRightPropellerActualRpm < 0)
+        {
+            _frontRightPropellerActualRpm = 0;
+        }
+
+        if (_backLeftPropellerActualRpm < 0)
+        {
+            _backLeftPropellerActualRpm = 0;
+        }
+
+        if (_backRightPropellerActualRpm < 0)
+        {
+            _backRightPropellerActualRpm = 0;
+        }
 
         if (Input.GetKey(KeyCode.S))
         {
@@ -44,7 +87,7 @@ public class Drone : MonoBehaviour
             _frontLeftPropellerActualRpm = gravityEquivalentRpm;
             _frontRightPropellerActualRpm = gravityEquivalentRpm;
             _backLeftPropellerActualRpm = gravityEquivalentRpm;
-            _backRightFrontPropellerActualRpm = gravityEquivalentRpm;
+            _backRightPropellerActualRpm = gravityEquivalentRpm;
         }
 
         if (Input.GetKey(KeyCode.T))
@@ -70,9 +113,9 @@ public class Drone : MonoBehaviour
         }
         if (Input.GetKey(KeyCode.H))
         {
-            if (_backRightFrontPropellerActualRpm < PropellerMaxRpm)
+            if (_backRightPropellerActualRpm < PropellerMaxRpm)
             {
-                _backRightFrontPropellerActualRpm += PropellerRpmStep;
+                _backRightPropellerActualRpm += PropellerRpmStep;
             }
         }
 
@@ -99,12 +142,10 @@ public class Drone : MonoBehaviour
         }
         if (Input.GetKey(KeyCode.L))
         {
-            if (_backRightFrontPropellerActualRpm > PropellerMinRpm)
+            if (_backRightPropellerActualRpm > PropellerMinRpm)
             {
-                _backRightFrontPropellerActualRpm -= PropellerRpmStep;
+                _backRightPropellerActualRpm -= PropellerRpmStep;
             }
         }
-
-        Debug.Log(transform.up * CalculateActualForce(_frontLeftPropellerActualRpm));
     }
 }
